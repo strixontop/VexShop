@@ -1,0 +1,38 @@
+# Cache long pour les images (le navigateur ne les retélécharge plus à chaque page).
+# Si tu remplaces une image, change son nom de fichier pour forcer la mise à jour.
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/products/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+
+[[redirects]]
+  from = "/api/order"
+  to = "http://169.58.54.10:25705/order"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/health"
+  to = "http://169.58.54.10:25705/health"
+  status = 200
+  force = true

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>À propos · VEX Shop</title>
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Polices chargées sans bloquer l'affichage (texte visible tout de suite avec une police système) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" /></noscript>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="about-hero">
+      <img src="hero.webp" srcset="hero-640.webp 640w, hero.webp 1024w" sizes="100vw" width="1024" height="576" decoding="async" alt="" />
+      <div class="overlay"></div>
+      <div class="container-page content">
+        <div>
+          <p class="eyebrow">La cour</p>
+          <h1 class="about-title">Qui somme nous ?</h1>
+        </div>
+      </div>
+    </section>
+
+    <section class="container-page about-body">
+      <div style="display:flex;justify-content:center">
+        <img src="logo-352.webp" alt="Logo VEX Shop" class="logo-lg" width="176" height="176" loading="lazy" decoding="async" />
+      </div>
+      <div class="about-text">
+        <p>
+          VEXSHOP a été créé en 2026 suite à la destruction de SMSHOP par un compte d'un ancien owner hacké
+        </p>
+        <p>
+          Nous on ne scam pas ! On ne veux pas gagner de l'argent derrière votre dos car pour 
+          nous l'argent ne compte pas. Notre priorité est de vous satisfaire avec nos produits.
+        </p>
+        <p>
+          Votre produit prend généralement 10 minutes a vous être livré. Notre support
+          est tout le temps présent afin de répondre a d'éventuels questions.
+        </p>
+        <a href="boutique.html" class="btn btn-primary mt-4" style="align-self:flex-start">Voir nos produits</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="app.js"></script>
+  <script>initLayout("a-propos");</script>
+</body>
+</html>

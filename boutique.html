@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boutique · VEX Shop</title>
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Polices chargées sans bloquer l'affichage (texte visible tout de suite avec une police système) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" /></noscript>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="container-page page">
+      <p class="eyebrow">Catalogue</p>
+      <h1 style="font-size:2.5rem;margin-top:0.5rem">La boutique</h1>
+      <p class="muted mt-3" style="max-width:36rem">
+        <span id="product-count"></span> Filtre par rayon, cherche un nom, trie par prix.
+      </p>
+      <p id="search-info" class="muted mt-3" style="display:none;font-size:0.875rem"></p>
+
+      <div class="toolbar">
+        <div class="filters" id="cat-filters"></div>
+        <select class="sort-select" id="sort-select" aria-label="Trier">
+          <option value="featured">Sélection</option>
+          <option value="price-asc">Prix croissant</option>
+          <option value="price-desc">Prix décroissant</option>
+          <option value="name">Nom A–Z</option>
+        </select>
+      </div>
+
+      <div class="product-grid" id="product-grid"></div>
+      <p id="no-results" class="empty-cart" style="display:none">Aucun produit pour cette recherche.</p>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="app.js"></script>
+  <script>
+    initLayout("boutique");
+
+    const params = new URLSearchParams(location.search);
+    let q = params.get("q") || "";
+    let cat = params.get("cat") || "all";
+    let sort = params.get("sort") || "featured";
+
+    document.getElementById("product-count").textContent = PRODUCTS.length;
+
+    // Category chips
+    const filtersEl = document.getElementById("cat-filters");
+    const chips = [{ id: "all", label: "Tout" }, ...CATEGORIES];
+    filtersEl.innerHTML = chips
+      .map(
+        (c) =>
+          `<button type="button" class="chip ${c.id === cat ? "active" : ""}" data-cat="${c.id}">${c.label}</button>`
+      )
+      .join("");
+
+    filtersEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-cat]");
+      if (!btn) return;
+      cat = btn.getAttribute("data-cat");
+      updateURL();
+      render();
+      filtersEl.querySelectorAll(".chip").forEach((c) =>
+        c.classList.toggle("active", c.getAttribute("data-cat") === cat)
+      );
+    });
+
+    document.getElementById("sort-select").value = sort;
+    document.getElementById("sort-select").addEventListener("change", (e) => {
+      sort = e.target.value;
+      updateURL();
+      render();
+    });
+
+    if (q) {
+      const info = document.getElementById("search-info");
+      info.style.display = "block";
+      info.appendChild(document.createTextNode("Résultats pour « " + q + " » "));
+      const clearBtn = document.createElement("button");
+      clearBtn.type = "button";
+      clearBtn.className = "btn btn-ghost";
+      clearBtn.style.cssText = "height:auto;padding:0;margin-left:0.5rem;color:var(--color-primary)";
+      clearBtn.textContent = "Effacer";
+      clearBtn.addEventListener("click", () => {
+        q = "";
+        updateURL();
+        info.style.display = "none";
+        render();
+      });
+      info.appendChild(clearBtn);
+    }
+
+    // Prefill header search
+    const searchInput = document.querySelector('.search-form input[name="q"]');
+    if (searchInput && q) searchInput.value = q;
+
+    function updateURL() {
+      const p = new URLSearchParams();
+      if (q) p.set("q", q);
+      if (cat && cat !== "all") p.set("cat", cat);
+      if (sort && sort !== "featured") p.set("sort", sort);
+      const qs = p.toString();
+      history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
+    }
+
+    function render() {
+      let items = searchProducts(q, cat);
+      if (sort === "price-asc") items = [...items].sort((a, b) => a.price - b.price);
+      if (sort === "price-desc") items = [...items].sort((a, b) => b.price - a.price);
+      if (sort === "name") items = [...items].sort((a, b) => a.name.localeCompare(b.name, "fr"));
+
+      const grid = document.getElementById("product-grid");
+      const empty = document.getElementById("no-results");
+      if (items.length === 0) {
+        grid.innerHTML = "";
+        empty.style.display = "block";
+      } else {
+        empty.style.display = "none";
+        grid.innerHTML = items.map(productCardHTML).join("");
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>

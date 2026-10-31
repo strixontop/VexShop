@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact · VEX Shop</title>
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Polices chargées sans bloquer l'affichage (texte visible tout de suite avec une police système) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" /></noscript>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="container-page contact-grid">
+      <div class="contact-info">
+        <p class="eyebrow">Contact</p>
+        <h1 style="font-size:2.5rem;margin-top:0.5rem">Parle à l'équipe VEX</h1>
+        <p class="muted mt-4" style="max-width:28rem">
+          Une question ? Écris-nous.
+          Réponse sous 24 h, jours ouvrés.
+        </p>
+        <dl>
+          <div>
+            <dt>E-mail</dt>
+            <dd>contact@vexshop.fr</dd>
+          </div>
+        </dl>
+      </div>
+
+      <form class="contact-form" id="contact-form">
+        <label>
+          Nom
+          <input type="text" name="name" autocomplete="name" required minlength="2" />
+        </label>
+        <label>
+          E-mail
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+        <label>
+          Message
+          <textarea name="message" placeholder="Produit, délai, question…" required minlength="8"></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">Envoyer</button>
+      </form>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="app.js"></script>
+  <script>
+    initLayout("contact");
+    document.getElementById("contact-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const name = (fd.get("name") || "").toString().trim();
+      const email = (fd.get("email") || "").toString().trim();
+      const message = (fd.get("message") || "").toString().trim();
+      if (name.length < 2 || !email.includes("@") || message.length < 8) {
+        toast("Écris un nom, un e-mail et un message.");
+        return;
+      }
+      toast("Message reçu. On te répond très vite.");
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

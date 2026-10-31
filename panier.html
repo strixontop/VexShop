@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panier · VEX Shop</title>
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Polices chargées sans bloquer l'affichage (texte visible tout de suite avec une police système) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Outfit:wght@400;500;600&display=swap" /></noscript>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="container-page page">
+      <p class="eyebrow">Panier</p>
+      <h1 style="font-size:2.5rem;margin-top:0.5rem">Ton coffre</h1>
+
+      <div id="cart-empty" class="empty-cart" style="display:none">
+        <p>Le panier est vide.</p>
+        <a href="boutique.html" class="btn btn-primary mt-4">Aller à la boutique</a>
+      </div>
+
+      <div id="cart-filled" class="cart-layout" style="display:none">
+        <ul class="cart-list" id="cart-list"></ul>
+        <aside class="cart-summary">
+          <h2>Récapitulatif</h2>
+          <div class="cart-row mt-4">
+            <span class="muted">Sous-total</span>
+            <span id="subtotal" class="price"></span>
+          </div>
+          <div class="cart-row total">
+            <span>Total</span>
+            <span id="total" class="price"></span>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-lg btn-block mt-4" id="checkout-btn">
+            Passer commande
+          </button>
+          <p class="muted mt-3" style="font-size:0.8rem;text-align:center">
+            Tu seras redirigé vers Discord pour finaliser ta commande.
+          </p>
+          <button type="button" class="btn btn-ghost btn-block mt-2" id="clear-btn">
+            Vider le panier
+          </button>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="app.js"></script>
+  <script>
+    initLayout("panier");
+
+    const DISCORD_URL = "https://discord.gg/jcVFNBA3R2";
+
+    function renderCart() {
+      const lines = loadCart();
+      const empty = document.getElementById("cart-empty");
+      const filled = document.getElementById("cart-filled");
+
+      if (lines.length === 0) {
+        empty.style.display = "block";
+        filled.style.display = "none";
+        return;
+      }
+      empty.style.display = "none";
+      filled.style.display = "grid";
+
+      const list = document.getElementById("cart-list");
+      list.innerHTML = lines
+        .map((line) => {
+          const p = getProduct(line.slug);
+          if (!p) return "";
+          return `
+            <li class="cart-item" data-slug="${p.slug}">
+              <img src="${p.image}" alt="" width="80" height="80" decoding="async" />
+              <div>
+                <div class="meta">
+                  <div>
+                    <p style="font-family:var(--font-display);font-weight:600">${p.name}</p>
+                    <p class="muted" style="font-size:0.875rem">${formatPrice(p.price)}</p>
+                  </div>
+                  <p class="price">${formatPrice(p.price * line.qty)}</p>
+                </div>
+                <div class="actions">
+                  <div class="qty-control">
+                    <button type="button" data-qty-down="${p.slug}" aria-label="Moins">−</button>
+                    <span>${line.qty}</span>
+                    <button type="button" data-qty-up="${p.slug}" aria-label="Plus">+</button>
+                  </div>
+                  <button type="button" class="btn btn-ghost btn-sm btn-danger" data-remove="${p.slug}">Retirer</button>
+                </div>
+              </div>
+            </li>`;
+        })
+        .join("");
+
+      const subtotal = cartSubtotal(lines);
+      document.getElementById("subtotal").textContent = formatPrice(subtotal);
+      document.getElementById("total").textContent = formatPrice(subtotal);
+    }
+
+    document.getElementById("cart-list").addEventListener("click", (e) => {
+      const up = e.target.closest("[data-qty-up]");
+      const down = e.target.closest("[data-qty-down]");
+      const rem = e.target.closest("[data-remove]");
+      if (up) {
+        const slug = up.getAttribute("data-qty-up");
+        const line = loadCart().find((l) => l.slug === slug);
+        if (line) setQty(slug, line.qty + 1);
+        renderCart();
+      }
+      if (down) {
+        const slug = down.getAttribute("data-qty-down");
+        const line = loadCart().find((l) => l.slug === slug);
+        if (line) setQty(slug, line.qty - 1);
+        renderCart();
+      }
+      if (rem) {
+        removeFromCart(rem.getAttribute("data-remove"));
+        renderCart();
+      }
+    });
+
+    document.getElementById("clear-btn").addEventListener("click", () => {
+      clearCart();
+      renderCart();
+      toast("Panier vidé");
+    });
+
+    document.getElementById("checkout-btn").addEventListener("click", () => {
+      window.open(DISCORD_URL, "_blank", "noopener");
+    });
+
+    renderCart();
+  </script>
+</body>
+</html>
